@@ -1,0 +1,70 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+	<PropertyGroup>
+		<OutputType>WinExe</OutputType>
+		<TargetFramework>net10.0-windows</TargetFramework>
+		<UseWPF>true</UseWPF>
+		<ImplicitUsings>enable</ImplicitUsings>
+		<Nullable>enable</Nullable>
+		<RootNamespace>ToxicFishing.App</RootNamespace>
+		<AssemblyName>ToxicFishing</AssemblyName>
+		<ApplicationManifest>app.manifest</ApplicationManifest>
+		<ApplicationIcon>Resources\ToxicFishing.ico</ApplicationIcon>
+	</PropertyGroup>
+
+	<ItemGroup>
+		<ProjectReference Include="..\ToxicFishing.Activity\ToxicFishing.Activity.csproj" />
+		<ProjectReference Include="..\ToxicFishing.Audio\ToxicFishing.Audio.csproj" />
+		<ProjectReference Include="..\ToxicFishing.Fishing\ToxicFishing.Fishing.csproj" />
+		<ProjectReference Include="..\ToxicFishing.Humanization\ToxicFishing.Humanization.csproj" />
+		<ProjectReference Include="..\ToxicFishing.Input\ToxicFishing.Input.csproj" />
+		<ProjectReference Include="..\ToxicFishing.Vision\ToxicFishing.Vision.csproj" />
+	</ItemGroup>
+
+	<ItemGroup>
+		<PackageReference Include="Microsoft.Extensions.DependencyInjection" />
+		<PackageReference Include="Roslynator.Analyzers">
+		  <PrivateAssets>all</PrivateAssets>
+		  <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+		</PackageReference>
+		<PackageReference Include="Roslynator.Formatting.Analyzers">
+		  <PrivateAssets>all</PrivateAssets>
+		  <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+		</PackageReference>
+	</ItemGroup>
+
+	<ItemGroup>
+		<None Update="Resources\bobber.png">
+			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		</None>
+	</ItemGroup>
+
+	<ItemGroup>
+		<!--  Embedded so MainWindow can use it as the runtime window/taskbar icon via a pack URI.  -->
+		<Resource Include="Resources\ToxicFishing.ico" />
+	</ItemGroup>
+
+	<PropertyGroup>
+		<PortableOutputRoot>$(MSBuildThisFileDirectory)..\dist</PortableOutputRoot>
+	</PropertyGroup>
+
+	<ItemGroup>
+		<!--  Windows-only: WPF, the native OpenCV runtime and WASAPI rule out other platforms.  -->
+		<PortableRuntimeIdentifier Include="win-x64" />
+	</ItemGroup>
+
+	<Target Name="GeneratePortablePackages"
+	        AfterTargets="Build"
+	        Condition="'$(Configuration)' == 'Release' and '$(BuildingPortablePackage)' != 'true' and '$(DesignTimeBuild)' != 'true' and '$(BuildingForLiveUnitTesting)' != 'true'">
+		<Message Importance="high"
+		         Text="Building portable self-contained package(s) for: @(PortableRuntimeIdentifier)" />
+		<Exec Command="dotnet publish &quot;$(MSBuildThisFileFullPath)&quot; -c $(Configuration) -r %(PortableRuntimeIdentifier.Identity) --self-contained true --nologo -p:PublishSingleFile=true -p:IncludeNativeLibrariesForSelfExtract=true -p:EnableCompressionInSingleFile=true -p:DebugType=embedded -p:BuildingPortablePackage=true -o &quot;$(PortableOutputRoot)\portable-%(PortableRuntimeIdentifier.Identity)&quot;" />
+		<ItemGroup>
+			<_PortableLeftoverSymbols Include="$(PortableOutputRoot)\**\*.pdb" />
+		</ItemGroup>
+		<Delete Files="@(_PortableLeftoverSymbols)" />
+		<Message Importance="high"
+		         Text="Portable package ready: $(PortableOutputRoot)\portable-%(PortableRuntimeIdentifier.Identity)" />
+	</Target>
+
+</Project>
