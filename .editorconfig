@@ -1,0 +1,492 @@
+# ============================================================
+# Enterprise .editorconfig for .NET + Roslynator
+# ============================================================
+# Purpose:
+# - Establish consistent coding conventions across the solution.
+# - Use Roslynator as a quality gate for readability and maintainability.
+# - Keep formatting rules strict, but avoid excessive noise from low-value hints.
+#
+# Notes:
+# - Roslynator supports configuration through .editorconfig.
+# - Analyzer severities are controlled with:
+#     dotnet_diagnostic.<ID>.severity
+# - Roslynator also supports named options such as:
+#     roslynator_use_var
+#     roslynator_prefix_field_identifier_with_underscore
+#     roslynator_null_check_style
+#     roslynator_doc_comment_summary_style
+#     roslynator_use_collection_expression
+#   and many others documented in the official guide.
+#
+# Strategy used here:
+# - Errors: only for rules that should block CI or prevent risky patterns.
+# - Warnings: important maintainability/readability issues.
+# - Suggestions/Silent: style nudges that should not disrupt delivery.
+# - None: rules that are too noisy or overlap with formatter/editor defaults.
+# ============================================================
+
+root = true
+
+# ------------------------------------------------------------
+# Global defaults
+# ------------------------------------------------------------
+[*]
+charset = utf-8
+end_of_line = lf
+insert_final_newline = true
+trim_trailing_whitespace = true
+
+# ------------------------------------------------------------
+# C# files
+# ------------------------------------------------------------
+[*.cs]
+indent_style = space
+indent_size = 4
+
+# ============================================================
+# Core Roslynator style options
+# These option names and allowed values are defined by Roslynator.
+# ============================================================
+
+# Prefer explicit accessibility on all declarations.
+# This is usually desirable in enterprise code because visibility
+# is part of the public contract and should not be implicit.
+roslynator_accessibility_modifiers = explicit
+
+# Keep braces multi-line for clarity and diff stability.
+roslynator_accessor_braces_style = multi_line
+roslynator_block_braces_style = multi_line
+
+# Use file-scoped namespace spacing that reads cleanly.
+roslynator_blank_line_after_file_scoped_namespace_declaration = true
+
+# Group using directives visually.
+roslynator_blank_line_between_using_directives = separate_groups
+
+# Keep expression-bodied members controlled rather than pervasive.
+# In enterprise codebases, full block bodies are often easier to debug,
+# annotate, and extend.
+roslynator_body_style = block
+roslynator_use_block_body_when_declaration_spans_over_multiple_lines = true
+roslynator_use_block_body_when_expression_spans_over_multiple_lines = true
+
+# Prefer modern null checking style.
+roslynator_null_check_style = pattern_matching
+
+# Keep doc comment summaries multi-line for easier maintenance.
+roslynator_doc_comment_summary_style = multi_line
+
+# Prefer String.Empty over literal empty string when normalizing style.
+roslynator_empty_string_style = field
+
+# Keep maximum line length aligned with common enterprise practice.
+# Roslynator's documented default is 140.
+roslynator_max_line_length = 140
+roslynator_tab_length = 4
+roslynator_new_line_at_end_of_file = true
+
+# Prefer underscore-prefixed private fields.
+# This is common in layered business applications and reduces naming ambiguity.
+roslynator_prefix_field_identifier_with_underscore = true
+
+# Prefer trailing commas in multi-line constructs to improve diffs.
+roslynator_trailing_comma_style = include
+
+# Prefer collection expressions where applicable, and prefer var whenever possible.
+roslynator_use_collection_expression = true
+roslynator_use_var = always
+roslynator_use_var_instead_of_implicit_object_creation = false
+csharp_style_var_for_built_in_types = true:suggestion
+csharp_style_var_when_type_is_apparent = true:suggestion
+csharp_style_var_elsewhere = true:suggestion
+
+# Prefer implicit object/array creation only when obvious.
+roslynator_array_creation_type_style = implicit_when_type_is_obvious
+roslynator_object_creation_type_style = implicit_when_type_is_obvious
+roslynator_object_creation_parentheses_style = include
+
+# Prefer method groups where they are clean and obvious.
+roslynator_use_anonymous_function_or_method_group = method_group
+
+# Normalize enum flag style for readability.
+roslynator_enum_flag_value_style = shift_operator
+roslynator_enum_has_flag_style = operator
+
+# Use modern collection/loop/readability conventions.
+roslynator_infinite_loop_style = while
+
+# Keep operator line breaks consistent.
+roslynator_arrow_token_new_line = before
+roslynator_binary_operator_new_line = before
+roslynator_conditional_operator_new_line = before
+roslynator_equals_token_new_line = before
+roslynator_null_conditional_operator_new_line = before
+
+# Conditional style: allow concise conditions when obvious.
+roslynator_conditional_operator_condition_parentheses_style = omit_when_condition_is_single_token
+
+# Prefer line break before while in do/while for clarity.
+roslynator_new_line_before_while_in_do_statement = true
+
+# ============================================================
+# Roslynator analyzers - baseline policy
+# ============================================================
+
+# Hardened baseline: Roslynator analyzers enabled by default are treated as warnings so
+# maintainability/readability issues are surfaced and resolved rather than silently accrued.
+dotnet_analyzer_diagnostic.category-roslynator.severity = warning
+
+# ------------------------------------------------------------
+# Escalated maintainability and correctness-oriented rules
+# ------------------------------------------------------------
+
+# Use nameof operator
+dotnet_diagnostic.rcs1015.severity = warning
+
+# Simplify argument null check
+dotnet_diagnostic.rcs1255.severity = warning
+
+# Invalid argument null check
+dotnet_diagnostic.rcs1256.severity = warning
+
+# Duplicate word in a comment
+dotnet_diagnostic.rcs1243.severity = warning
+
+# Fix documentation comment tag
+dotnet_diagnostic.rcs1247.severity = warning
+
+# Remove redundant catch block
+dotnet_diagnostic.rcs1265.severity = warning
+
+# Unnecessary null-forgiving operator
+dotnet_diagnostic.rcs1249.severity = warning
+
+# Unnecessary conditional access
+dotnet_diagnostic.rcs9003.severity = warning
+
+# Unnecessary null check
+dotnet_diagnostic.rcs9005.severity = warning
+
+# Call Any instead of Count
+dotnet_diagnostic.rcs9004.severity = suggestion
+
+# Use property SyntaxNode.SpanStart
+dotnet_diagnostic.rcs9002.severity = suggestion
+
+# ------------------------------------------------------------
+# Formatting and style normalization rules
+# Keep visible, but do not make them disruptive.
+# ------------------------------------------------------------
+
+# Add/remove blank line between using directives
+dotnet_diagnostic.rcs0015.severity = suggestion
+
+# Format accessor braces
+dotnet_diagnostic.rcs0020.severity = suggestion
+
+# Format block braces
+dotnet_diagnostic.rcs0021.severity = suggestion
+
+# Place new line after/before binary operator
+dotnet_diagnostic.rcs0027.severity = silent
+
+# Place new line after/before ?: operator
+dotnet_diagnostic.rcs0028.severity = silent
+
+# Place new line after/before arrow token
+dotnet_diagnostic.rcs0032.severity = silent
+
+# Add/remove new line before while in do statement
+dotnet_diagnostic.rcs0051.severity = silent
+
+# Place new line after/before equals token
+dotnet_diagnostic.rcs0052.severity = silent
+
+# Normalize max line length / wrapping-related formatting
+dotnet_diagnostic.rcs0056.severity = suggestion
+
+# Ensure final newline
+dotnet_diagnostic.rcs0058.severity = suggestion
+
+# Normalize conditional null-check style
+dotnet_diagnostic.rcs1248.severity = suggestion
+
+# Format documentation comment summary
+dotnet_diagnostic.rcs1253.severity = suggestion
+
+# Normalize enum flag value
+dotnet_diagnostic.rcs1254.severity = suggestion
+
+# Use var or explicit type
+dotnet_diagnostic.rcs1264.severity = suggestion
+
+# Use raw string literal where appropriate
+dotnet_diagnostic.rcs1266.severity = suggestion
+
+# Use string interpolation instead of string.Concat
+dotnet_diagnostic.rcs1267.severity = suggestion
+
+# Simplify numeric comparison
+dotnet_diagnostic.rcs1268.severity = suggestion
+
+# ------------------------------------------------------------
+# SDK CA rules explicitly suppressed
+# ------------------------------------------------------------
+
+# CA1031: Do not catch general exception types
+dotnet_diagnostic.CA1031.severity = none
+
+# CA1032: Implement standard exception constructors
+dotnet_diagnostic.CA1032.severity = none
+
+# CA1305: Specify IFormatProvider
+dotnet_diagnostic.CA1305.severity = none
+
+# CA1307: Specify StringComparison for clarity
+dotnet_diagnostic.CA1307.severity = suggestion
+
+# CA1308: Normalize strings to uppercase
+dotnet_diagnostic.CA1308.severity = none
+
+# CA1720: Identifier contains type name
+dotnet_diagnostic.CA1720.severity = none
+
+# CA1724: Type names should not match namespaces
+dotnet_diagnostic.CA1724.severity = none
+
+# CA1819: Properties should not return arrays
+dotnet_diagnostic.CA1819.severity = none
+
+# CA1863: Cache CompositeFormat
+dotnet_diagnostic.CA1863.severity = none
+
+# CA2007: Do not directly await a Task
+dotnet_diagnostic.CA2007.severity = none
+
+# CA2201: Do not raise reserved exception types
+dotnet_diagnostic.CA2201.severity = none
+
+# CA2215: Dispose methods should call base class Dispose
+dotnet_diagnostic.CA2215.severity = none
+
+# CA2225: Operator overloads have named alternates
+dotnet_diagnostic.CA2225.severity = none
+
+# CA1000: Do not declare static members on generic types
+dotnet_diagnostic.CA1000.severity = none
+
+# ------------------------------------------------------------
+# Rules intentionally disabled to avoid enterprise noise
+# ------------------------------------------------------------
+
+# Add blank line after embedded statement
+dotnet_diagnostic.rcs0001.severity = none
+
+# Add blank line after #region
+dotnet_diagnostic.rcs0002.severity = none
+
+# Add blank line before #endregion
+dotnet_diagnostic.rcs0005.severity = none
+
+# Add blank line before using directive list
+dotnet_diagnostic.rcs0006.severity = none
+
+# Add blank line between accessors
+dotnet_diagnostic.rcs0007.severity = none
+
+# Add blank line between closing brace and next statement
+dotnet_diagnostic.rcs0008.severity = none
+
+# Add blank line between declarations
+dotnet_diagnostic.rcs0010.severity = none
+
+# Add/remove blank line between single-line accessors
+dotnet_diagnostic.rcs0011.severity = none
+
+# Put attribute list on its own line
+dotnet_diagnostic.rcs0016.severity = none
+
+# Format type declaration braces
+dotnet_diagnostic.rcs0023.severity = none
+
+# Put constructor initializer on its own line
+dotnet_diagnostic.rcs0029.severity = none
+
+# Put embedded statement on its own line
+dotnet_diagnostic.rcs0030.severity = none
+
+# Put enum member on its own line
+dotnet_diagnostic.rcs0031.severity = none
+
+# Put statement on its own line
+dotnet_diagnostic.rcs0033.severity = none
+
+# Remove new line before base list
+dotnet_diagnostic.rcs0039.severity = none
+
+# Use carriage return + linefeed as new line
+dotnet_diagnostic.rcs0044.severity = none
+
+# Use linefeed as new line
+dotnet_diagnostic.rcs0045.severity = none
+
+# Use spaces instead of tab
+dotnet_diagnostic.rcs0046.severity = none
+
+# Add blank line after top comment
+dotnet_diagnostic.rcs0049.severity = none
+
+# Add blank line before top declaration
+dotnet_diagnostic.rcs0050.severity = none
+
+# Merge else with nested if
+dotnet_diagnostic.rcs1006.severity = none
+
+# Add braces
+# Usually covered by existing team standards or IDE analyzers.
+dotnet_diagnostic.rcs1007.severity = none
+
+# Use predefined type
+dotnet_diagnostic.rcs1013.severity = none
+
+# Use implicitly/explicitly typed array
+dotnet_diagnostic.rcs1014.severity = suggestion
+
+# Normalize expression-bodied member style
+dotnet_diagnostic.rcs1016.severity = none
+
+# Use implicit/explicit object creation
+dotnet_diagnostic.rcs1250.severity = suggestion
+
+# Normalize usage of infinite loop
+dotnet_diagnostic.rcs1252.severity = none
+
+# ============================================================
+# Hardened quality gates
+# ------------------------------------------------------------
+# These raise the bar on correctness, modern C#, immutability, and naming. They reflect patterns
+# the codebase already follows, so they lock in current quality and block regressions rather than
+# forcing a large refactor.
+#
+# Severity note: the IDE-prefixed (IDExxxx) and dotnet_naming_* rules below are reported by the IDE
+# and by `dotnet format`. To also enforce them during `dotnet build`, set
+# <EnforceCodeStyleInBuild>true</EnforceCodeStyleInBuild> in a Directory.Build.props. The Roslynator
+# (RCS) and CA rules already run at build time.
+# ============================================================
+
+# ------------------------------------------------------------
+# Language and file shape
+# ------------------------------------------------------------
+
+# Require file-scoped namespaces (matches the whole codebase).
+csharp_style_namespace_declarations = file_scoped:warning
+
+# Keep using directives outside the namespace and folders aligned with namespaces.
+csharp_using_directive_placement = outside_namespace:warning
+dotnet_style_namespace_match_folder = true:warning
+
+# Remove unnecessary using directives (ImplicitUsings is enabled, so leftovers are noise).
+dotnet_diagnostic.IDE0005.severity = warning
+
+# Always require explicit accessibility modifiers (reinforces roslynator_accessibility_modifiers).
+dotnet_style_require_accessibility_modifiers = always:warning
+
+# ------------------------------------------------------------
+# Braces and blocks
+# ------------------------------------------------------------
+
+# Always use braces, even for single-line blocks (matches existing guard clauses).
+csharp_prefer_braces = true:warning
+
+# ------------------------------------------------------------
+# Modern pattern matching and null handling
+# ------------------------------------------------------------
+csharp_style_prefer_pattern_matching = true:warning
+csharp_style_pattern_matching_over_is_with_cast_check = true:warning
+csharp_style_pattern_matching_over_as_with_null_check = true:warning
+csharp_style_prefer_not_pattern = true:warning
+csharp_style_prefer_null_check_over_type_check = true:warning
+csharp_style_conditional_delegate_call = true:warning
+dotnet_style_null_propagation = true:warning
+dotnet_style_coalesce_expression = true:warning
+dotnet_style_prefer_is_null_check_over_reference_equality_method = true:warning
+
+# ------------------------------------------------------------
+# Expression-level preferences
+# ------------------------------------------------------------
+dotnet_style_object_initializer = true:warning
+dotnet_style_collection_initializer = true:warning
+dotnet_style_prefer_auto_properties = true:warning
+dotnet_style_prefer_compound_assignment = true:warning
+dotnet_style_prefer_simplified_boolean_expressions = true:warning
+csharp_prefer_simple_using_statement = true:warning
+csharp_style_inlined_variable_declaration = true:warning
+csharp_style_prefer_index_operator = true:warning
+csharp_style_prefer_range_operator = true:warning
+csharp_style_deconstructed_variable_declaration = true:suggestion
+dotnet_style_prefer_conditional_expression_over_assignment = true:suggestion
+dotnet_style_prefer_conditional_expression_over_return = true:suggestion
+
+# ------------------------------------------------------------
+# Immutability and encapsulation
+# ------------------------------------------------------------
+dotnet_style_readonly_field = true:warning
+csharp_prefer_static_local_functions = true:warning
+csharp_style_prefer_readonly_struct = true:warning
+csharp_style_prefer_readonly_struct_member = true:warning
+
+# ------------------------------------------------------------
+# Dead code
+# ------------------------------------------------------------
+dotnet_code_quality_unused_parameters = all:warning
+csharp_style_unused_value_expression_statement_preference = discard_variable:suggestion
+csharp_style_unused_value_assignment_preference = discard_variable:suggestion
+
+# ------------------------------------------------------------
+# Naming conventions (IDE1006)
+# Methods are intentionally excluded so test names like Method_Scenario_Expected stay valid.
+# ------------------------------------------------------------
+dotnet_diagnostic.IDE1006.severity = warning
+
+# Interfaces must be PascalCase prefixed with I.
+dotnet_naming_rule.interfaces_begin_with_i.severity = warning
+dotnet_naming_rule.interfaces_begin_with_i.symbols = interface_symbol
+dotnet_naming_rule.interfaces_begin_with_i.style = prefix_interface_with_i
+dotnet_naming_symbols.interface_symbol.applicable_kinds = interface
+dotnet_naming_symbols.interface_symbol.applicable_accessibilities = *
+dotnet_naming_style.prefix_interface_with_i.required_prefix = I
+dotnet_naming_style.prefix_interface_with_i.capitalization = pascal_case
+
+# Types must be PascalCase.
+dotnet_naming_rule.types_are_pascal_case.severity = warning
+dotnet_naming_rule.types_are_pascal_case.symbols = type_symbol
+dotnet_naming_rule.types_are_pascal_case.style = pascal_case_style
+dotnet_naming_symbols.type_symbol.applicable_kinds = class, struct, enum, delegate
+dotnet_naming_symbols.type_symbol.applicable_accessibilities = *
+dotnet_naming_style.pascal_case_style.capitalization = pascal_case
+
+# Properties, events, and constants must be PascalCase.
+dotnet_naming_rule.members_are_pascal_case.severity = warning
+dotnet_naming_rule.members_are_pascal_case.symbols = member_symbol
+dotnet_naming_rule.members_are_pascal_case.style = pascal_case_style
+dotnet_naming_symbols.member_symbol.applicable_kinds = property, event
+dotnet_naming_symbols.member_symbol.applicable_accessibilities = *
+
+dotnet_naming_rule.constants_are_pascal_case.severity = warning
+dotnet_naming_rule.constants_are_pascal_case.symbols = constant_symbol
+dotnet_naming_rule.constants_are_pascal_case.style = pascal_case_style
+dotnet_naming_symbols.constant_symbol.applicable_kinds = field
+dotnet_naming_symbols.constant_symbol.applicable_accessibilities = *
+dotnet_naming_symbols.constant_symbol.required_modifiers = const
+
+# ------------------------------------------------------------
+# Optional: generated code exclusion
+# ------------------------------------------------------------
+[*.g.cs]
+dotnet_analyzer_diagnostic.category-roslynator.severity = none
+
+[*.designer.cs]
+dotnet_analyzer_diagnostic.category-roslynator.severity = none
+
+[*.generated.cs]
+dotnet_analyzer_diagnostic.category-roslynator.severity = none
