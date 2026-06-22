@@ -68,7 +68,7 @@ Then drive everything from the app:
 ### Build and Run
 
 ```bash
-git clone https://github.com/your-username/ToxicFishing.git
+git clone https://github.com/hidden-space-xyz/ToxicFishing.git
 cd ToxicFishing
 dotnet build ToxicFishing.sln -c Release
 dotnet run --project ToxicFishing.App
@@ -98,7 +98,7 @@ ToxicFishing is constantly evolving. Here's what we're planning for future relea
 ## 📸 Screenshots
 
 <p align="center">
-  <img width="60%" alt="ToxicFishing" src="https://placehold.co/1200x675?text=ToxicFishing+Screenshot" />
+  <img width="100%" alt="image" src="https://github.com/user-attachments/assets/0e945a6d-cdd3-4d8f-8a1f-428100a8d241" />
 </p>
 
 ## 🔍 Security Notes
